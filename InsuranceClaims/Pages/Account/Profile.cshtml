@@ -1,0 +1,27 @@
+﻿@page
+@model InsuranceClaims.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "My password";
+
+}
+
+<h1>My password</h1>
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label">Current password</label>
+        <input asp-for="CurrentPassword" type="password" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">New password</label>
+        <input asp-for="NewPassword" type="password" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Confirm new password</label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="mt-3">@Model.Message</div>
+    }
+</form>

@@ -1,0 +1,22 @@
+﻿@page
+@model InsuranceClaims.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label">Username or email</label>
+        <input asp-for="LoginName" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Sign in</button>
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="text-danger mt-3">@Model.ErrorMessage</div>
+    }
+</form>
