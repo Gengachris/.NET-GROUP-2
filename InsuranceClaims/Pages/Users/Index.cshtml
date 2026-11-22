@@ -13,6 +13,7 @@
             <th>Email</th>
             <th>Role</th>
             <th>Active</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -24,14 +25,15 @@
             <td>@user.RoleName</td>
             <td>@(user.IsActive ? "Yes" : "No")</td>
             <td>
-                <form method="post" asp-page-handler="Remove">
+                <a class="btn btn-sm btn-outline-secondary me-2" asp-page="Edit" asp-route-userId="@user.UserId">Edit</a>
+                <form method="post" asp-page-handler="Remove" class="d-inline">
                     <input type="hidden" name="userId" value="@user.UserId" />
                     <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                 </form>
             </td>
         </tr>
     }
-</tbody>
+    </tbody>
 </table>
 @if (!string.IsNullOrEmpty(Model.Message))
 {
