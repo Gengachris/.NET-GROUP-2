@@ -16,14 +16,24 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Users)
-        {
-            <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td>@user.RoleName</td>
-                <td>@(user.IsActive ? "Yes" : "No")</td>
-            </tr>
-        }
-    </tbody>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td>@user.Email</td>
+            <td>@user.RoleName</td>
+            <td>@(user.IsActive ? "Yes" : "No")</td>
+            <td>
+                <form method="post" asp-page-handler="Remove">
+                    <input type="hidden" name="userId" value="@user.UserId" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+</tbody>
 </table>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="mt-3">@Model.Message</div>
+}
