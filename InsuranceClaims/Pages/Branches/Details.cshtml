@@ -1,0 +1,44 @@
+@page
+@model InsuranceClaims.Pages.Branches.DetailsModel
+@{
+	ViewData["Title"] = "Branch details";
+}
+
+@if (Model.Branch == null)
+{
+	<h1>Branch not found</h1>
+	<a class="btn btn-link" asp-page="Index">Back</a>
+}
+else
+{
+	<h1>Branch details</h1>
+	<dl class="row">
+		<dt class="col-sm-3">Branch number</dt><dd class="col-sm-9">@Model.Branch.BranchNumber</dd>
+		<dt class="col-sm-3">Branch name</dt><dd class="col-sm-9">@Model.Branch.BranchName</dd>
+		<dt class="col-sm-3">Location</dt><dd class="col-sm-9">@Model.Branch.Location</dd>
+		<dt class="col-sm-3">Phone</dt><dd class="col-sm-9">@Model.Branch.Phone</dd>
+		<dt class="col-sm-3">Email</dt><dd class="col-sm-9">@Model.Branch.Email</dd>
+		<dt class="col-sm-3">Active</dt><dd class="col-sm-9">@(Model.Branch.IsActive ? "Yes" : "No")</dd>
+	</dl>
+	<h2>Adjusters</h2>
+	<table class="table table-bordered">
+		<thead><tr><th>Name</th><th>Licence number</th><th>Email</th><th>Phone</th><th>Active</th></tr></thead>
+		<tbody>
+		@foreach (var adjuster in Model.Adjusters)
+		{
+			<tr><td>@adjuster.Name</td><td>@adjuster.LicenseNumber</td><td>@adjuster.Email</td><td>@adjuster.Phone</td><td>@(adjuster.IsActive ? "Yes" : "No")</td></tr>
+		}
+		</tbody>
+	</table>
+	<h2>Claims</h2>
+	<table class="table table-bordered">
+		<thead><tr><th>Claim</th><th>Date</th><th>Status</th><th>Amount</th></tr></thead>
+		<tbody>
+		@foreach (var claim in Model.Claims)
+		{
+			<tr><td>@claim.ClaimNumber</td><td>@claim.ClaimDate.ToString("yyyy-MM-dd")</td><td>@claim.Status</td><td>@claim.ClaimAmount.ToString("N2")</td></tr>
+		}
+		</tbody>
+	</table>
+	<a class="btn btn-link" asp-page="Index">Back</a>
+}
