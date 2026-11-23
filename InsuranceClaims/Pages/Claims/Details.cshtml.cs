@@ -30,6 +30,9 @@ namespace InsuranceClaims.Pages.Claims
         public List<HistoryRow> History { get; set; } = new();
         public List<SelectListItem> AdjusterList { get; set; } = new();
         public string AssignError { get; set; } = "";
+
+        public bool CanInvestigate { get; set; }
+        public List<InvestigationRow> Investigations { get; set; } = new();
         public IActionResult OnGet(int claimId)
         {
             using var conn = new SqlConnection(_configuration.GetConnectionString("InsuranceClaims"));
@@ -77,6 +80,30 @@ namespace InsuranceClaims.Pages.Claims
             using (var reader = cmd.ExecuteReader())
                 while (reader.Read())
                     AdjusterList.Add(new SelectListItem(reader["firstName"] + " " + reader["lastName"], reader["adjusterId"].ToString()));
+
+
+            using (var cmd = new SqlCommand("SELECT COUNT(*) FROM Claims c INNER JOIN Adjusters a ON c.adjusterId = a.adjusterId WHERE c.claimId = @claimId AND c.status = N'Under Investigation' AND a.userId = @userId", conn))
+            {
+                cmd.Parameters.AddWithValue("@claimId", claimId);
+                cmd.Parameters.AddWithValue("@userId", int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value));
+                CanInvestigate = (int)cmd.ExecuteScalar()! > 0;
+            }
+            using (var cmd = new SqlCommand("usp_Investigations_List", conn))
+            {
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@claimId", claimId);
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                    Investigations.Add(new InvestigationRow
+                    {
+                        InvestigationId = Convert.ToInt32(reader["investigationId"]),
+                        InvestigationDate = Convert.ToDateTime(reader["investigationDate"]),
+                        Findings = reader["findings"].ToString()!,
+                        RecommendedAmount = Convert.ToDecimal(reader["recommendedAmount"]),
+                        InvestigationStatus = reader["investigationStatus"].ToString()!
+                    });
+            }
+            
             return Page();
         }
 
@@ -127,6 +154,39 @@ namespace InsuranceClaims.Pages.Claims
             try { cmd.ExecuteNonQuery(); }
             catch (SqlException ex) { AssignError = ex.Message; return OnGet(claimId); }
             return RedirectToPage(new { claimId });
+        }
+
+        public IActionResult OnPostSubmitInvestigation(int claimId, int investigationId)
+        {
+            return RunInvestigation("usp_Investigations_Submit", claimId, investigationId);
+        }
+
+        public IActionResult OnPostDeleteInvestigation(int claimId, int investigationId)
+        {
+            return RunInvestigation("usp_Investigations_Delete", claimId, investigationId);
+        }
+
+        private IActionResult RunInvestigation(string procedure, int claimId, int investigationId)
+        {
+            using var conn = new SqlConnection(_configuration.GetConnectionString("InsuranceClaims"));
+            using var cmd = new SqlCommand(procedure, conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@investigationId", investigationId);
+            cmd.Parameters.AddWithValue("@claimId", claimId);
+            cmd.Parameters.AddWithValue("@userId", int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value));
+            conn.Open();
+            try { cmd.ExecuteNonQuery(); }
+            catch (SqlException ex) { AssignError = ex.Message; return OnGet(claimId); }
+            return RedirectToPage(new { claimId });
+        }
+
+        public class InvestigationRow
+        {
+            public int InvestigationId { get; set; }
+            public DateTime InvestigationDate { get; set; }
+            public string Findings { get; set; } = "";
+            public decimal RecommendedAmount { get; set; }
+            public string InvestigationStatus { get; set; } = "";
         }
         public class HistoryRow
         {
