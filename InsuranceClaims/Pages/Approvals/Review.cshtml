@@ -1,0 +1,98 @@
+﻿@page "{id:int}"
+@model InsuranceClaims.Pages.Approvals.ReviewModel
+@{
+    ViewData["Title"] = "Review claim";
+}
+
+<h1>Review claim @Model.Claim!.ClaimNumber</h1>
+<a asp-page="Index" class="btn btn-link ps-0 mb-2">&larr; Back to approvals</a>
+
+@if (Model.ErrorMessage != "")
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <tr><th>Policyholder</th><td>@Model.Claim.PolicyHolderName (@Model.Claim.PolicyNumber)</td></tr>
+            <tr><th>Branch</th><td>@Model.Claim.BranchName</td></tr>
+            <tr><th>Adjuster</th><td>@Model.Claim.AdjusterName</td></tr>
+            <tr><th>Claim date</th><td>@Model.Claim.ClaimDate.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>Incident date</th><td>@Model.Claim.IncidentDate.ToString("yyyy-MM-dd")</td></tr>
+            <tr><th>Location</th><td>@Model.Claim.IncidentLocation</td></tr>
+            <tr><th>Description</th><td>@Model.Claim.IncidentDescription</td></tr>
+            <tr><th>Claimed amount</th><td>@Model.Claim.ClaimAmount.ToString("N2")</td></tr>
+            <tr><th>Status</th><td>@Model.Claim.Status</td></tr>
+        </table>
+
+        <h4>Latest investigation</h4>
+        @if (Model.Investigation != null)
+        {
+            <table class="table table-bordered">
+                <tr><th>Investigated by</th><td>@Model.Investigation.AdjusterName</td></tr>
+                <tr><th>Date</th><td>@Model.Investigation.InvestigationDate.ToString("yyyy-MM-dd")</td></tr>
+                <tr><th>Findings</th><td>@Model.Investigation.Findings</td></tr>
+                <tr><th>Recommended amount</th><td>@Model.Investigation.RecommendedAmount.ToString("N2")</td></tr>
+                <tr><th>Remarks</th><td>@Model.Investigation.Remarks</td></tr>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-warning">No submitted investigation was found for this claim.</div>
+        }
+    </div>
+
+    <div class="col-md-6">
+        @if (Model.Claim.Status == "Pending Approval")
+        {
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Decision</label><br />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="Decision" value="Approved" id="dApprove" @(Model.Decision != "Rejected" ? "checked" : "") />
+                        <label class="form-check-label" for="dApprove">Approve</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="Decision" value="Rejected" id="dReject" @(Model.Decision == "Rejected" ? "checked" : "") />
+                        <label class="form-check-label" for="dReject">Reject</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Approved amount (if approving)</label>
+                    <input asp-for="ApprovedAmount" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Rejection reason (if rejecting)</label>
+                    <textarea asp-for="RejectionReason" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Remarks (optional)</label>
+                    <textarea asp-for="Remarks" class="form-control" rows="2"></textarea>
+                </div>
+                <button class="btn btn-primary">Submit decision</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info">This claim is <strong>@Model.Claim.Status</strong>, so it can no longer be approved or rejected.</div>
+        }
+    </div>
+</div>
+
+<h4 class="mt-4">History</h4>
+<table class="table table-sm table-bordered">
+    <thead><tr><th>Date</th><th>From</th><th>To</th><th>By</th><th>Remarks</th></tr></thead>
+    <tbody>
+    @foreach (var h in Model.History)
+    {
+        <tr>
+            <td>@h.ChangeDate.ToString("yyyy-MM-dd HH:mm")</td>
+            <td>@h.OldStatus</td>
+            <td>@h.NewStatus</td>
+            <td>@h.UserName</td>
+            <td>@h.Remarks</td>
+        </tr>
+    }
+    </tbody>
+</table>
