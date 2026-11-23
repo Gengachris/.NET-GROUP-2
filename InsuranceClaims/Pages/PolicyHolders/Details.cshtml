@@ -1,0 +1,33 @@
+@page
+@model InsuranceClaims.Pages.PolicyHolders.DetailsModel
+@{
+	ViewData["Title"] = "Policyholder details";
+}
+
+@if (Model.PolicyHolder == null)
+{
+	<h1>Policyholder not found</h1>
+	<a class="btn btn-link" asp-page="Index">Back</a>
+}
+else
+{
+	<h1>Policyholder details</h1>
+	<dl class="row">
+		<dt class="col-sm-3">Name</dt><dd class="col-sm-9">@Model.PolicyHolder.FirstName @Model.PolicyHolder.LastName</dd>
+		<dt class="col-sm-3">Email</dt><dd class="col-sm-9">@Model.PolicyHolder.Email</dd>
+		<dt class="col-sm-3">Phone</dt><dd class="col-sm-9">@Model.PolicyHolder.Phone</dd>
+		<dt class="col-sm-3">Policy number</dt><dd class="col-sm-9">@Model.PolicyHolder.PolicyNumber</dd>
+		<dt class="col-sm-3">Address</dt><dd class="col-sm-9">@Model.PolicyHolder.Address</dd>
+	</dl>
+	<h2>Claims</h2>
+	<table class="table table-bordered">
+		<thead><tr><th>Claim</th><th>Date</th><th>Branch</th><th>Status</th><th>Amount</th></tr></thead>
+		<tbody>
+		@foreach (var claim in Model.Claims)
+		{
+			<tr><td>@claim.ClaimNumber</td><td>@claim.ClaimDate.ToString("yyyy-MM-dd")</td><td>@claim.BranchName</td><td>@claim.Status</td><td>@claim.ClaimAmount.ToString("N2")</td></tr>
+		}
+		</tbody>
+	</table>
+	<a class="btn btn-link" asp-page="Index">Back</a>
+}
