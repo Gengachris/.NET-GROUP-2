@@ -31,12 +31,20 @@
             <td>@item.UserName</td>
             <td>@(item.IsActive ? "Yes" : "No")</td>
             <td>
-                <form method="post" asp-page-handler="Remove">
+                <a asp-page="Edit"
+                   asp-route-adjusterId="@item.AdjusterId"
+                   class="btn btn-sm btn-outline-primary">
+                    Edit
+                </a>
+
+                <form method="post"
+                      asp-page-handler="Remove"
+                      style="display:inline;">
                     <input type="hidden"
                            name="adjusterId"
                            value="@item.AdjusterId" />
-
-                    <button class="btn btn-sm btn-outline-danger">
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger">
                         Delete
                     </button>
                 </form>
