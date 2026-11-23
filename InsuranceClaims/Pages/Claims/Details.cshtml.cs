@@ -14,6 +14,8 @@ namespace InsuranceClaims.Pages.Claims
         {
             _configuration = configuration;
         }
+
+        public int ClaimId { get; set; }
         public string ClaimNumber { get; set; } = "";
         public DateTime ClaimDate { get; set; }
         public DateTime IncidentDate { get; set; }
@@ -39,6 +41,7 @@ namespace InsuranceClaims.Pages.Claims
                 {
                     return RedirectToPage("Index");
                 }
+                ClaimId = claimId;
                 ClaimNumber = reader["claimNumber"].ToString()!;
                 ClaimDate = Convert.ToDateTime(reader["claimDate"]);
                 IncidentDate = Convert.ToDateTime(reader["incidentDate"]);

@@ -6,6 +6,11 @@
 
 <h1>@Model.ClaimNumber</h1>
 <p><a asp-page="Index">Back to claims</a></p>
+@if ((User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+     && (Model.Status == "Submitted" || Model.Status == "Under Review" || Model.Status == "Pending Documents"))
+{
+    <a class="btn btn-outline-secondary mb-3" asp-page="Edit" asp-route-claimId="@Model.ClaimId">Edit</a>
+}
 <table class="table table-bordered">
     <tr><th>Status</th><td>@Model.Status</td></tr>
     <tr><th>Policyholder</th><td>@Model.PolicyHolderName (@Model.PolicyNumber)</td></tr>
