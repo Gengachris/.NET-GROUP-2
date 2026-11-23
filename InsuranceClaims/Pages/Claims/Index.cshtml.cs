@@ -30,6 +30,7 @@ namespace InsuranceClaims.Pages.Claims
             {
                 Claims.Add(new ClaimRow
                 {
+                    ClaimId = Convert.ToInt32(reader["claimId"]),
                     ClaimNumber = reader["claimNumber"].ToString()!,
                     PolicyHolderName = reader["policyHolderName"].ToString()!,
                     BranchName = reader["branchName"].ToString()!,
@@ -42,6 +43,7 @@ namespace InsuranceClaims.Pages.Claims
 
         public class ClaimRow
         {
+            public int ClaimId { get; set; }
             public string ClaimNumber { get; set; } = "";
             public string PolicyHolderName { get; set; } = "";
             public string BranchName { get; set; } = "";

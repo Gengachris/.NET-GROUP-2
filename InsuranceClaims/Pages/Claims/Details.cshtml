@@ -1,0 +1,121 @@
+﻿@page
+@model InsuranceClaims.Pages.Claims.DetailsModel
+@{
+    ViewData["Title"] = Model.ClaimNumber;
+}
+
+<a asp-page="Index">Back to claims</a>
+<div class="d-flex align-items-center gap-3 mb-3">
+    <h1 class="mb-0">@Model.ClaimNumber</h1>
+    <span class="claim-status">@Model.Status</span>
+</div>
+
+@if (User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+{
+    <div class="claim-actions mb-3">
+        @if (Model.Status == "Submitted" || Model.Status == "Under Review" || Model.Status == "Pending Documents")
+        {
+            <a class="btn btn-outline-secondary" asp-page="Edit" asp-route-claimId="@Model.ClaimId">Edit</a>
+        }
+        @if (Model.Status == "Submitted" || Model.Status == "Pending Documents")
+        {
+            <form method="post" asp-page-handler="Review" class="d-inline">
+                <input type="hidden" name="claimId" value="@Model.ClaimId" />
+                <button class="btn btn-outline-primary">Mark under review</button>
+            </form>
+        }
+        @if (Model.Status == "Under Review")
+        {
+            <form method="post" asp-page-handler="Documents" class="d-inline">
+                <input type="hidden" name="claimId" value="@Model.ClaimId" />
+                <button class="btn btn-outline-secondary">Waiting for documents</button>
+            </form>
+        }
+        @if (Model.Status == "Submitted" || Model.Status == "Under Review" || Model.Status == "Pending Documents" || Model.Status == "Under Investigation")
+        {
+            <form method="post" asp-page-handler="Assign" class="d-flex gap-2">
+                <input type="hidden" name="claimId" value="@Model.ClaimId" />
+                <select name="adjusterId" class="form-select">
+                    <option value="">Choose an adjuster</option>
+                    @foreach (var item in Model.AdjusterList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <button class="btn btn-primary">Assign</button>
+            </form>
+        }
+        @if (!string.IsNullOrEmpty(Model.AssignError))
+        {
+            <div class="text-danger">@Model.AssignError</div>
+        }
+    </div>
+}
+
+<table class="table table-bordered">
+    <tr><th>Policyholder</th><td>@Model.PolicyHolderName (@Model.PolicyNumber)</td></tr>
+    <tr><th>Branch</th><td>@Model.BranchName</td></tr>
+    <tr><th>Claim date</th><td>@Model.ClaimDate.ToString("yyyy-MM-dd")</td></tr>
+    <tr><th>Incident date</th><td>@Model.IncidentDate.ToString("yyyy-MM-dd")</td></tr>
+    <tr><th>Amount</th><td>@Model.ClaimAmount.ToString("N2")</td></tr>
+    <tr><th>Location</th><td>@Model.IncidentLocation</td></tr>
+    <tr><th>What happened</th><td>@Model.IncidentDescription</td></tr>
+</table>
+
+<h2 class="h4">History</h2>
+<div class="history-box">
+    <table class="table table-bordered mb-0">
+        <thead>
+            <tr><th>When</th><th>From</th><th>To</th><th>By</th><th>Remarks</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.History)
+        {
+            <tr>
+                <td>@item.ChangeDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@item.OldStatus</td>
+                <td>@item.NewStatus</td>
+                <td>@item.UserName</td>
+                <td>@item.Remarks</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+    <h2 class="h4 mb-0">Investigations</h2>
+    @if (Model.CanInvestigate && !Model.Investigations.Any(i => i.InvestigationStatus == "In Progress"))
+    {
+        <a class="btn btn-primary" asp-page="/Investigations/Create" asp-route-claimId="@Model.ClaimId">New investigation</a>
+    }
+</div>
+<table class="table table-bordered">
+    <thead><tr><th>Date</th><th>Status</th><th>Findings</th><th>Recommended</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var item in Model.Investigations)
+    {
+        <tr>
+            <td>@item.InvestigationDate.ToString("yyyy-MM-dd")</td>
+            <td>@item.InvestigationStatus</td>
+            <td>@item.Findings</td>
+            <td>@item.RecommendedAmount.ToString("N2")</td>
+            <td>
+                @if (Model.CanInvestigate && item.InvestigationStatus == "In Progress")
+                {
+                    <form method="post" asp-page-handler="SubmitInvestigation" class="d-inline">
+                        <input type="hidden" name="claimId" value="@Model.ClaimId" />
+                        <input type="hidden" name="investigationId" value="@item.InvestigationId" />
+                        <button class="btn btn-sm btn-primary">Submit</button>
+                    </form>
+                    <form method="post" asp-page-handler="DeleteInvestigation" class="d-inline">
+                        <input type="hidden" name="claimId" value="@Model.ClaimId" />
+                        <input type="hidden" name="investigationId" value="@item.InvestigationId" />
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

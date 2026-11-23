@@ -30,6 +30,10 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-page="/Users/Index">Users</a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-page="/Adjusters/Index">Adjusters</a>
+                                </li>
                             }
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-page="/Claims/Index">Claims</a>
@@ -54,6 +58,13 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-page="/Account/Login">Login</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Approvals/Index">Approvals</a>
                             </li>
                         }
                     </ul>

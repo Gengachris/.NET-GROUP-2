@@ -33,7 +33,7 @@
 </form>
 <table class="table table-bordered">
     <thead>
-        <tr><th>Claim</th><th>Policyholder</th><th>Branch</th><th>Status</th><th>Amount</th></tr>
+        <tr><th>Claim</th><th>Policyholder</th><th>Branch</th><th>Status</th><th>Amount</th><th></th></tr>
     </thead>
     <tbody>
     @foreach (var claim in Model.Claims)
@@ -44,6 +44,7 @@
             <td>@claim.BranchName</td>
             <td>@claim.Status</td>
             <td>@claim.ClaimAmount.ToString("N2")</td>
+            <td><a asp-page="Details" asp-route-claimId="@claim.ClaimId">Open</a></td>
         </tr>
     }
     </tbody>
