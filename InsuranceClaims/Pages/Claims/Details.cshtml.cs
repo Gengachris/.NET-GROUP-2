@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InsuranceClaims.Pages.Claims
 {
@@ -27,6 +28,8 @@ namespace InsuranceClaims.Pages.Claims
         public string PolicyNumber { get; set; } = "";
         public string BranchName { get; set; } = "";
         public List<HistoryRow> History { get; set; } = new();
+        public List<SelectListItem> AdjusterList { get; set; } = new();
+        public string AssignError { get; set; } = "";
         public IActionResult OnGet(int claimId)
         {
             using var conn = new SqlConnection(_configuration.GetConnectionString("InsuranceClaims"));
@@ -53,21 +56,27 @@ namespace InsuranceClaims.Pages.Claims
                 PolicyNumber = reader["policyNumber"].ToString()!;
                 BranchName = reader["branchName"].ToString()!;
             }
-            using var history = new SqlCommand("usp_Claims_History", conn);
-            history.CommandType = System.Data.CommandType.StoredProcedure;
-            history.Parameters.AddWithValue("@claimId", claimId);
-            using var rows = history.ExecuteReader();
-            while (rows.Read())
+            using (var history = new SqlCommand("usp_Claims_History", conn))
             {
-                History.Add(new HistoryRow
+                history.CommandType = System.Data.CommandType.StoredProcedure;
+                history.Parameters.AddWithValue("@claimId", claimId);
+                using var rows = history.ExecuteReader();
+                while (rows.Read())
                 {
-                    ChangeDate = Convert.ToDateTime(rows["changeDate"]),
-                    OldStatus = rows["oldStatus"].ToString()!,
-                    NewStatus = rows["NewStatus"].ToString()!,
-                    Remarks = rows["remarks"].ToString()!,
-                    UserName = rows["userName"].ToString()!
-                });
+                    History.Add(new HistoryRow
+                    {
+                        ChangeDate = Convert.ToDateTime(rows["changeDate"]),
+                        OldStatus = rows["oldStatus"].ToString()!,
+                        NewStatus = rows["NewStatus"].ToString()!,
+                        Remarks = rows["remarks"].ToString()!,
+                        UserName = rows["userName"].ToString()!
+                    });
+                }
             }
+            using (var cmd = new SqlCommand("SELECT adjusterId, firstName, lastName FROM Adjusters WHERE isActive = 1 ORDER BY lastName", conn))
+            using (var reader = cmd.ExecuteReader())
+                while (reader.Read())
+                    AdjusterList.Add(new SelectListItem(reader["firstName"] + " " + reader["lastName"], reader["adjusterId"].ToString()));
             return Page();
         }
 
@@ -95,6 +104,28 @@ namespace InsuranceClaims.Pages.Claims
             cmd.Parameters.AddWithValue("@remarks", remarks);
             conn.Open();
             cmd.ExecuteNonQuery();
+            return RedirectToPage(new { claimId });
+        }
+
+        public IActionResult OnPostAssign(int claimId, int adjusterId)
+        {
+            if (!User.IsInRole("Administrator") && !User.IsInRole("Claims Manager"))
+                return RedirectToPage("Index");
+            if (adjusterId <= 0)
+            {
+                AssignError = "Choose an active adjuster.";
+                return OnGet(claimId);
+            }
+
+            using var conn = new SqlConnection(_configuration.GetConnectionString("InsuranceClaims"));
+            using var cmd = new SqlCommand("usp_Claims_Assign", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@claimId", claimId);
+            cmd.Parameters.AddWithValue("@adjusterId", adjusterId);
+            cmd.Parameters.AddWithValue("@userId", int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value));
+            conn.Open();
+            try { cmd.ExecuteNonQuery(); }
+            catch (SqlException ex) { AssignError = ex.Message; return OnGet(claimId); }
             return RedirectToPage(new { claimId });
         }
         public class HistoryRow

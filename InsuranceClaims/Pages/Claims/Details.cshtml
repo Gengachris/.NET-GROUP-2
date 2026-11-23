@@ -27,6 +27,26 @@
         <button class="btn btn-outline-secondary mb-3">Waiting for documents</button>
     </form>
 }
+
+@if ((User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+     && (Model.Status == "Submitted" || Model.Status == "Under Review" || Model.Status == "Pending Documents" || Model.Status == "Under Investigation"))
+{
+    <form method="post" asp-page-handler="Assign" class="mb-3">
+        <input type="hidden" name="claimId" value="@Model.ClaimId" />
+        <select name="adjusterId" class="form-select">
+            <option value="">Choose an adjuster</option>
+            @foreach (var item in Model.AdjusterList)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <button class="btn btn-primary mt-2">Assign</button>
+    </form>
+}
+@if (!string.IsNullOrEmpty(Model.AssignError))
+{
+    <div class="text-danger mb-3">@Model.AssignError</div>
+}
 <table class="table table-bordered">
     <tr><th>Status</th><td>@Model.Status</td></tr>
     <tr><th>Policyholder</th><td>@Model.PolicyHolderName (@Model.PolicyNumber)</td></tr>
