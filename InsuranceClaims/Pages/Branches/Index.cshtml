@@ -1,0 +1,43 @@
+@page
+@model InsuranceClaims.Pages.Branches.IndexModel
+@{
+	ViewData["Title"] = "Branches";
+}
+
+<h1>Branches</h1>
+@if (User.IsInRole("Administrator"))
+{
+	<a class="btn btn-primary mb-3" asp-page="Create">New branch</a>
+}
+<form method="get" class="row g-2 mb-3">
+	<div class="col-md-9"><input name="search" value="@Model.Search" class="form-control" placeholder="Branch number, name, or location" /></div>
+	<div class="col-md-3"><button class="btn btn-outline-primary">Search</button></div>
+</form>
+<table class="table table-bordered">
+	<thead><tr><th>Number</th><th>Name</th><th>Location</th><th>Phone</th><th>Active</th><th></th></tr></thead>
+	<tbody>
+	@foreach (var branch in Model.Branches)
+	{
+		<tr>
+			<td>@branch.BranchNumber</td><td>@branch.BranchName</td><td>@branch.Location</td><td>@branch.Phone</td>
+			<td>@(branch.IsActive ? "Yes" : "No")</td>
+			<td>
+				<a class="btn btn-sm btn-outline-primary me-2" asp-page="Details" asp-route-branchId="@branch.BranchId">Details</a>
+				@if (User.IsInRole("Administrator"))
+				{
+					<a class="btn btn-sm btn-outline-secondary me-2" asp-page="Edit" asp-route-branchId="@branch.BranchId">Edit</a>
+					<form method="post" asp-page-handler="Remove" class="d-inline">
+						<input type="hidden" name="branchId" value="@branch.BranchId" />
+						<input type="hidden" name="search" value="@Model.Search" />
+						<button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+					</form>
+				}
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+	<div class="text-danger mt-3">@Model.Message</div>
+}
