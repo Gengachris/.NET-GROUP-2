@@ -1,0 +1,46 @@
+﻿@page
+@model InsuranceClaims.Pages.Claims.IndexModel
+@{
+    ViewData["Title"] = "Claims";
+}
+
+<h1>Claims</h1>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-5">
+        <input name="search" value="@Model.Search" class="form-control" placeholder="Claim, name, or policy number" />
+    </div>
+    <div class="col-md-4">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            <option value="Submitted">Submitted</option>
+            <option value="Under Review">Under Review</option>
+            <option value="Under Investigation">Under Investigation</option>
+            <option value="Pending Documents">Pending Documents</option>
+            <option value="Pending Approval">Pending Approval</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Partially Paid">Partially Paid</option>
+            <option value="Paid">Paid</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button class="btn btn-outline-primary">Search</button>
+    </div>
+</form>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Claim</th><th>Policyholder</th><th>Branch</th><th>Status</th><th>Amount</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var claim in Model.Claims)
+    {
+        <tr>
+            <td>@claim.ClaimNumber</td>
+            <td>@claim.PolicyHolderName</td>
+            <td>@claim.BranchName</td>
+            <td>@claim.Status</td>
+            <td>@claim.ClaimAmount.ToString("N2")</td>
+        </tr>
+    }
+    </tbody>
+</table>
