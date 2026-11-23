@@ -34,3 +34,28 @@ body {
 .table-bordered td {
     border: 1px solid #333;
 }
+
+.claim-status {
+    border: 1px solid #333;
+    padding: 0.35rem 0.75rem;
+    font-weight: 600;
+}
+
+.claim-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.history-box {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid #333;
+}
+
+    .history-box thead th {
+        position: sticky;
+        top: 0;
+        background: #fff;
+    }

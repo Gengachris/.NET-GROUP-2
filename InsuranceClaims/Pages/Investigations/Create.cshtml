@@ -1,0 +1,32 @@
+﻿@page
+@model InsuranceClaims.Pages.Investigations.CreateModel
+@{
+    ViewData["Title"] = "New investigation";
+}
+
+<h1>New investigation</h1>
+<form method="post">
+    <input type="hidden" asp-for="ClaimId" />
+    <div class="mb-3">
+        <label class="form-label">Date</label>
+        <input asp-for="InvestigationDate" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Findings</label>
+        <textarea asp-for="Findings" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Recommended amount</label>
+        <input asp-for="RecommendedAmount" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+    <button class="btn btn-primary">Save</button>
+    <a class="btn btn-link" asp-page="/Claims/Details" asp-route-claimId="@Model.ClaimId">Back</a>
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="text-danger mt-3">@Model.ErrorMessage</div>
+    }
+</form>
