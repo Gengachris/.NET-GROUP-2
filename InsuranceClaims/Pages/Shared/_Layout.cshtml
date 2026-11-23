@@ -34,6 +34,15 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-page="/Claims/Index">Claims</a>
                             </li>
+                            @if (User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-page="/PolicyHolders/Index">Policyholders</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Branches/Index">Branches</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-page="/Account/Profile">My password</a>
                             </li>
