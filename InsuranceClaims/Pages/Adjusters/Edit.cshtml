@@ -1,0 +1,60 @@
+﻿@page "{adjusterId:int}"
+@model InsuranceClaims.Pages.Adjusters.EditModel
+
+<h1>Edit Adjuster</h1>
+
+<form method="post">
+
+    <input type="hidden" asp-for="AdjusterId" />
+
+    <div class="mb-3">
+        <label asp-for="UserId">User</label>
+        <select asp-for="UserId" asp-items="Model.Users" class="form-select">
+            <option value="">-- Select User --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BranchId">Branch</label>
+        <select asp-for="BranchId" asp-items="Model.Branches" class="form-select">
+            <option value="">-- Select Branch --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LicenseNumber">License Number</label>
+        <input asp-for="LicenseNumber" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" type="email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone">Phone</label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label">Active</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+
+    <p class="text-danger mt-2">@Model.ErrorMessage</p>
+
+</form>
+
+<a asp-page="Index" class="btn btn-secondary">Back to Adjusters</a>

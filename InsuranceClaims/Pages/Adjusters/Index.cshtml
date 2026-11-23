@@ -1,0 +1,48 @@
+﻿@page
+@model InsuranceClaims.Pages.Adjusters.IndexModel
+
+<h1>Adjusters</h1>
+
+<a class="btn btn-primary mb-3" asp-page="Create">New adjuster</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Licence</th>
+            <th>Branch</th>
+            <th>User</th>
+            <th>Active</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    @foreach (var item in Model.Rows)
+    {
+        <tr>
+            <td>
+                <a asp-page="Details"
+                   asp-route-adjusterId="@item.AdjusterId">
+                    @item.Name
+                </a>
+            </td>
+            <td>@item.LicenseNumber</td>
+            <td>@item.BranchName</td>
+            <td>@item.UserName</td>
+            <td>@(item.IsActive ? "Yes" : "No")</td>
+            <td>
+                <form method="post" asp-page-handler="Remove">
+                    <input type="hidden"
+                           name="adjusterId"
+                           value="@item.AdjusterId" />
+
+                    <button class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>
+
+<p>@Model.Message</p>

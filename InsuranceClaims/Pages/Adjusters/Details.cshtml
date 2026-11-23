@@ -1,0 +1,59 @@
+﻿@page "{adjusterId:int}"
+@model InsuranceClaims.Pages.Adjusters.DetailsModel
+
+<h1>Adjuster Details</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>@Model.Name</h4>
+
+        <p><strong>Adjuster ID:</strong> @Model.AdjusterId</p>
+        <p><strong>License Number:</strong> @Model.LicenseNumber</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Phone:</strong> @Model.Phone</p>
+        <p>
+            <strong>Status:</strong>
+            @(Model.IsActive ? "Active" : "Inactive")
+        </p>
+
+        <a asp-page="Edit"
+           asp-route-adjusterId="@Model.AdjusterId"
+           class="btn btn-warning">
+            Edit Adjuster
+        </a>
+    </div>
+</div>
+
+<h2>Assigned Claims</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Claim Number</th>
+            <th>Status</th>
+            <th>Claim Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.Claims.Count == 0)
+        {
+            <tr>
+                <td colspan="3">No claims assigned to this adjuster.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var claim in Model.Claims)
+            {
+                <tr>
+                    <td>@claim.ClaimNumber</td>
+                    <td>@claim.Status</td>
+                    <td>@claim.ClaimAmount.ToString("N2")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<a asp-page="Index" class="btn btn-secondary">Back to Adjusters</a>
