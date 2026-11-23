@@ -1,0 +1,53 @@
+﻿@page
+@model InsuranceClaims.Pages.Adjusters.CreateModel
+
+<h1>Register New Adjuster</h1>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label asp-for="UserId" class="form-label">User</label>
+        <select asp-for="UserId" asp-items="Model.Users" class="form-select">
+            <option value="">-- Select User --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BranchId" class="form-label">Branch</label>
+        <select asp-for="BranchId" asp-items="Model.Branches" class="form-select">
+            <option value="">-- Select Branch --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LicenseNumber" class="form-label">License Number</label>
+        <input asp-for="LicenseNumber" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" type="email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label">Phone</label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+
+    <p class="text-danger mt-2">@Model.ErrorMessage</p>
+
+</form>
+
+<a asp-page="Index" class="btn btn-secondary mt-2">Back to Adjusters</a>
