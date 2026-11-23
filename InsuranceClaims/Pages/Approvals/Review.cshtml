@@ -25,6 +25,22 @@
             <tr><th>Claimed amount</th><td>@Model.Claim.ClaimAmount.ToString("N2")</td></tr>
             <tr><th>Status</th><td>@Model.Claim.Status</td></tr>
         </table>
+
+        <h4>Latest investigation</h4>
+        @if (Model.Investigation != null)
+        {
+            <table class="table table-bordered">
+                <tr><th>Investigated by</th><td>@Model.Investigation.AdjusterName</td></tr>
+                <tr><th>Date</th><td>@Model.Investigation.InvestigationDate.ToString("yyyy-MM-dd")</td></tr>
+                <tr><th>Findings</th><td>@Model.Investigation.Findings</td></tr>
+                <tr><th>Recommended amount</th><td>@Model.Investigation.RecommendedAmount.ToString("N2")</td></tr>
+                <tr><th>Remarks</th><td>@Model.Investigation.Remarks</td></tr>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-warning">No submitted investigation was found for this claim.</div>
+        }
     </div>
 
     <div class="col-md-6">
@@ -34,11 +50,11 @@
                 <div class="mb-3">
                     <label class="form-label">Decision</label><br />
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="Decision" value="Approved" id="dApprove" checked="@(Model.Decision != "Rejected")" />
+                        <input class="form-check-input" type="radio" name="Decision" value="Approved" id="dApprove" @(Model.Decision != "Rejected" ? "checked" : "") />
                         <label class="form-check-label" for="dApprove">Approve</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="Decision" value="Rejected" id="dReject" checked="@(Model.Decision == "Rejected")" />
+                        <input class="form-check-input" type="radio" name="Decision" value="Rejected" id="dReject" @(Model.Decision == "Rejected" ? "checked" : "") />
                         <label class="form-check-label" for="dReject">Reject</label>
                     </div>
                 </div>
@@ -68,15 +84,15 @@
 <table class="table table-sm table-bordered">
     <thead><tr><th>Date</th><th>From</th><th>To</th><th>By</th><th>Remarks</th></tr></thead>
     <tbody>
-        @foreach (var h in Model.History)
-        {
-            <tr>
-                <td>@h.ChangeDate.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>@h.OldStatus</td>
-                <td>@h.NewStatus</td>
-                <td>@h.UserName</td>
-                <td>@h.Remarks</td>
-            </tr>
-        }
+    @foreach (var h in Model.History)
+    {
+        <tr>
+            <td>@h.ChangeDate.ToString("yyyy-MM-dd HH:mm")</td>
+            <td>@h.OldStatus</td>
+            <td>@h.NewStatus</td>
+            <td>@h.UserName</td>
+            <td>@h.Remarks</td>
+        </tr>
+    }
     </tbody>
 </table>

@@ -8,6 +8,9 @@ namespace InsuranceClaims.Pages.Approvals
     [Authorize(Roles = "Administrator,Claims Manager")]
     public class ReviewModel : PageModel
     {
+        // Status value the investigation feature saves when an investigation is submitted.
+        private const string SubmittedStatus = "Submitted";
+
         private readonly IConfiguration _configuration;
         public ReviewModel(IConfiguration configuration)
         {
@@ -21,6 +24,7 @@ namespace InsuranceClaims.Pages.Approvals
         [BindProperty] public string? Remarks { get; set; }
 
         public ClaimDetails? Claim { get; set; }
+        public InvestigationDetails? Investigation { get; set; }
         public List<HistoryRow> History { get; set; } = new();
         public string ErrorMessage { get; set; } = "";
 
@@ -95,6 +99,31 @@ namespace InsuranceClaims.Pages.Approvals
                 };
             }
 
+            // Latest submitted investigation for this claim (if any)
+            using (var cmd = new SqlCommand(@"
+                SELECT TOP 1 i.investigationDate, i.findings, i.recommendedAmount, i.remarks,
+                       a.firstName + ' ' + a.lastName AS adjusterName
+                FROM Investigations i
+                INNER JOIN Adjusters a ON i.adjusterId = a.adjusterId
+                WHERE i.claimId = @id AND i.investigationStatus = @submitted
+                ORDER BY i.investigationDate DESC, i.investigationId DESC", conn))
+            {
+                cmd.Parameters.AddWithValue("@id", Id);
+                cmd.Parameters.AddWithValue("@submitted", SubmittedStatus);
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    Investigation = new InvestigationDetails
+                    {
+                        InvestigationDate = Convert.ToDateTime(reader["investigationDate"]),
+                        Findings = reader["findings"].ToString()!,
+                        RecommendedAmount = Convert.ToDecimal(reader["recommendedAmount"]),
+                        Remarks = reader["remarks"].ToString()!,
+                        AdjusterName = reader["adjusterName"].ToString()!
+                    };
+                }
+            }
+
             using (var cmd = new SqlCommand(@"
                 SELECT h.oldStatus, h.NewStatus, h.changeDate, h.remarks, u.userName
                 FROM ClaimHistory h
@@ -131,6 +160,15 @@ namespace InsuranceClaims.Pages.Approvals
             public string PolicyHolderName { get; set; } = "";
             public string PolicyNumber { get; set; } = "";
             public string BranchName { get; set; } = "";
+            public string AdjusterName { get; set; } = "";
+        }
+
+        public class InvestigationDetails
+        {
+            public DateTime InvestigationDate { get; set; }
+            public string Findings { get; set; } = "";
+            public decimal RecommendedAmount { get; set; }
+            public string Remarks { get; set; } = "";
             public string AdjusterName { get; set; } = "";
         }
 
