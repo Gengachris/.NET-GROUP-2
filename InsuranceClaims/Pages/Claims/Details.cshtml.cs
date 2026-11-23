@@ -70,6 +70,33 @@ namespace InsuranceClaims.Pages.Claims
             }
             return Page();
         }
+
+        public IActionResult OnPostReview(int claimId)
+        {
+            return ChangeStatus(claimId, "Under Review", "Claim is under review.");
+        }
+
+        public IActionResult OnPostDocuments(int claimId)
+        {
+            return ChangeStatus(claimId, "Pending Documents", "Waiting for documents.");
+        }
+
+        private IActionResult ChangeStatus(int claimId, string newStatus, string remarks)
+        {
+            if (!User.IsInRole("Administrator") && !User.IsInRole("Claims Manager"))
+                return RedirectToPage("Index");
+
+            using var conn = new SqlConnection(_configuration.GetConnectionString("InsuranceClaims"));
+            using var cmd = new SqlCommand("usp_Claims_ChangeStatus", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@claimId", claimId);
+            cmd.Parameters.AddWithValue("@newStatus", newStatus);
+            cmd.Parameters.AddWithValue("@userId", int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value));
+            cmd.Parameters.AddWithValue("@remarks", remarks);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            return RedirectToPage(new { claimId });
+        }
         public class HistoryRow
         {
             public DateTime ChangeDate { get; set; }

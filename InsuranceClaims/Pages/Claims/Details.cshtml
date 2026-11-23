@@ -11,6 +11,22 @@
 {
     <a class="btn btn-outline-secondary mb-3" asp-page="Edit" asp-route-claimId="@Model.ClaimId">Edit</a>
 }
+
+@if ((User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+     && (Model.Status == "Submitted" || Model.Status == "Pending Documents"))
+{
+    <form method="post" asp-page-handler="Review" class="d-inline">
+        <input type="hidden" name="claimId" value="@Model.ClaimId" />
+        <button class="btn btn-outline-primary mb-3">Mark under review</button>
+    </form>
+}
+@if ((User.IsInRole("Administrator") || User.IsInRole("Claims Manager")) && Model.Status == "Under Review")
+{
+    <form method="post" asp-page-handler="Documents" class="d-inline">
+        <input type="hidden" name="claimId" value="@Model.ClaimId" />
+        <button class="btn btn-outline-secondary mb-3">Waiting for documents</button>
+    </form>
+}
 <table class="table table-bordered">
     <tr><th>Status</th><td>@Model.Status</td></tr>
     <tr><th>Policyholder</th><td>@Model.PolicyHolderName (@Model.PolicyNumber)</td></tr>
