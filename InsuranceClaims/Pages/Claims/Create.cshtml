@@ -1,0 +1,47 @@
+﻿@page
+@model InsuranceClaims.Pages.Claims.CreateModel
+@{
+    ViewData["Title"] = "New claim";
+}
+
+<h1>New claim</h1>
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label">Policyholder</label>
+        <select asp-for="PolicyHolderId" asp-items="Model.PolicyHolderList" class="form-select">
+            <option value="">Choose</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Branch</label>
+        <select asp-for="BranchId" asp-items="Model.BranchList" class="form-select">
+            <option value="">Choose</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Claim date</label>
+        <input asp-for="ClaimDate" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Incident date</label>
+        <input asp-for="IncidentDate" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <input asp-for="ClaimAmount" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input asp-for="IncidentLocation" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">What happened</label>
+        <textarea asp-for="IncidentDescription" class="form-control"></textarea>
+    </div>
+    <button class="btn btn-primary">Save</button>
+    <a class="btn btn-link" asp-page="Index">Back</a>
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="text-danger mt-3">@Model.ErrorMessage</div>
+    }
+</form>

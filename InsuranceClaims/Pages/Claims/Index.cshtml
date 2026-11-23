@@ -5,6 +5,10 @@
 }
 
 <h1>Claims</h1>
+@if (User.IsInRole("Administrator") || User.IsInRole("Claims Manager"))
+{
+    <a class="btn btn-primary mb-3" asp-page="Create">New claim</a>
+}
 <form method="get" class="row g-2 mb-3">
     <div class="col-md-5">
         <input name="search" value="@Model.Search" class="form-control" placeholder="Claim, name, or policy number" />
